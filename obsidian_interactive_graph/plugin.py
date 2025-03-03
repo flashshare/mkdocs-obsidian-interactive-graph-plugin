@@ -80,7 +80,7 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
                 # find something that matches: shortest path depth
                 abslen = None
                 for k, _ in self.nodes.items():
-                    for _ in re.finditer(re.compile(r"(.*" + re.escape(wikilink) + r")"), k):
+                    for _ in re.finditer(re.compile(r"(.*" + re.escape(wikilink) + r")", re.IGNORECASE), k):
                         curlen = k.count('/')
                         if abslen is None or curlen < abslen:
                             target_page_path = k
