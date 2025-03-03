@@ -36,7 +36,7 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
 
     def page_if_exists(self, page: str) -> str:
         page = self.get_path(self.site_path, page)
-        for k,_ in self.nodes.items():
+        for k, _ in self.nodes.items():
             if k == page:
                 return page
         return None
@@ -54,6 +54,10 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
             }
 
     def parse_markdown(self, markdown: str, page: MkDocsPage):
+        # Skip processing for Jupyter notebook files
+        if page.file.src_uri.endswith(".ipynb"):
+            return
+
         # wikilinks: [[Link#Anchor|Custom Text]], just the link is needed
         WIKI_PATTERN = re.compile(r"(?<!\!)\[\[(?P<wikilink>[^\|^\]^\#]{1,})(?:.*?)\]\]")
         for match in re.finditer(WIKI_PATTERN, markdown):
@@ -75,10 +79,10 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
 
                 # find something that matches: shortest path depth
                 abslen = None
-                for k,_ in self.nodes.items():
-                    for _ in re.finditer(re.compile(r"(.*" + wikilink + r")"), k):
+                for k, _ in self.nodes.items():
+                    for _ in re.finditer(re.compile(r"(.*" + re.escape(wikilink) + r")"), k):
                         curlen = k.count('/')
-                        if abslen == None or curlen < abslen:
+                        if abslen is None or curlen < abslen:
                             target_page_path = k
                             abslen = curlen
 
@@ -97,12 +101,12 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
             self.nodes[target_page_path]["symbolSize"] = self.nodes[target_page_path].get("symbolSize", 1) + 1
 
     def create_graph_json(self, config: MkDocsConfig):
-        for i, (k,v) in enumerate(self.nodes.items()):
+        for i, (k, v) in enumerate(self.nodes.items()):
             node = {
-                    "id": str(i),
-                    "name": v["title"],
-                    "symbolSize": v["symbolSize"],
-                    "value": v["url"]
+                "id": str(i),
+                "name": v["title"],
+                "symbolSize": v["symbolSize"],
+                "value": v["url"]
             }
             self.data["nodes"].append(node)
 
