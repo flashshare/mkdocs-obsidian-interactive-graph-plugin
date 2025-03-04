@@ -106,7 +106,7 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
                 "id": str(i),
                 "name": v["title"],
                 "symbolSize": v["symbolSize"],
-                "value": v["url"].replace(self.site_path, "")  # Adjust URL for Vercel
+                "value": v["url"]
             }
             self.data["nodes"].append(node)
 
