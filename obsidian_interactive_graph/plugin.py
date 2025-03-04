@@ -10,6 +10,10 @@ from mkdocs.structure.nav import Navigation as MkDocsNav
 
 
 class ObsidianInteractiveGraphPlugin(BasePlugin):
+    config_scheme = (
+        ('site_path', str, ''),
+    )
+
     def __init__(self):
         super().__init__()
         self.logger = get_plugin_logger(__name__)
@@ -116,17 +120,8 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
             json.dump(self.data, file, sort_keys=False, indent=2)
 
     def on_config(self, config: MkDocsConfig, **kwargs):
-        import os
-
-        # Detect if running on Vercel
-        is_vercel = os.getenv("VERCEL") == "1"
-
-        # GitHub Pages includes site_name in URLs, Vercel does not
-        if is_vercel:
-            self.site_path = ""  # Remove extra prefix for Vercel
-        else:
-            self.site_path = config.site_name + "/"  # Keep for GitHub Pages
-
+        # Use the configured site_path or default to empty
+        self.site_path = os.getenv('MKDOCS_SITE_PATH', self.config['site_path'])
 
     def on_nav(self, nav: MkDocsNav, files: MkDocsFiles, config: MkDocsConfig, **kwargs):
         self.collect_pages(nav, config)
