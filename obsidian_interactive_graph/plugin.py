@@ -116,7 +116,17 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
             json.dump(self.data, file, sort_keys=False, indent=2)
 
     def on_config(self, config: MkDocsConfig, **kwargs):
-        self.site_path = config.site_name + "/"
+        import os
+
+        # Detect if running on Vercel
+        is_vercel = os.getenv("VERCEL") == "1"
+
+        # GitHub Pages includes site_name in URLs, Vercel does not
+        if is_vercel:
+            self.site_path = ""  # Remove extra prefix for Vercel
+        else:
+            self.site_path = config.site_name + "/"  # Keep for GitHub Pages
+
 
     def on_nav(self, nav: MkDocsNav, files: MkDocsFiles, config: MkDocsConfig, **kwargs):
         self.collect_pages(nav, config)
