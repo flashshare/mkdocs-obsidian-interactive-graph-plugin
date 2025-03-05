@@ -131,5 +131,5 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
     def on_page_markdown(self, markdown: str, page: MkDocsPage, config: MkDocsConfig, files: MkDocsFiles, **kwargs):
         self.parse_markdown(markdown, page)
 
-    def on_env(self, env, config: MkDocsConfig, files: MkDocsFiles):
+    def on_post_build(self, config: MkDocsConfig, **kwargs):
         self.create_graph_json(config)
