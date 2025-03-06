@@ -106,7 +106,7 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
                 "id": str(i),
                 "name": v["title"],
                 "symbolSize": v["symbolSize"],
-                "value": v["url"]
+                "value": v["url"].replace(self.site_path, "")  # Adjust URL for both environments
             }
             self.data["nodes"].append(node)
 
@@ -121,9 +121,9 @@ class ObsidianInteractiveGraphPlugin(BasePlugin):
 
         # GitHub Pages includes site_name in URLs, Vercel does not
         if is_vercel:
-            self.site_path = ""  # Remove extra prefix for Vercel
+            self.site_path = config.get("extra", {}).get("vercel_site_path", "")
         else:
-            self.site_path = config.site_name + "/"  # Keep for GitHub Pages
+            self.site_path = config.get("extra", {}).get("github_pages_site_path", config.site_name + "/")
 
     def on_nav(self, nav: MkDocsNav, files: MkDocsFiles, config: MkDocsConfig, **kwargs):
         self.collect_pages(nav, config)
